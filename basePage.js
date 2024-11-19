@@ -25,7 +25,7 @@ async function displayBestMovie() {
                 <div class="text-container">
                     <h1>${bestMovieData.title}</h1>
                     <p>${bestMovieData.long_description}</p>
-                    <button>Détails</button>
+                    <button onclick="showMovieDetails(${bestMovieData.id})">Détails</button>
                 </div>
     `
 }
@@ -63,7 +63,11 @@ async function displayMoviesByGenre(containerDivClass, genre = "") {
         `;
         moviesContainer.appendChild(movieCard);
     }
+    moviesContainer.innerHTML += `
+        <button class="button-display-more" onclick="displayMoreMovie('${containerDivClass}')">Voir plus</button>
+    `;
 }
+
 
 displayMoviesByGenre('.cat-box.box-1', '')
 displayMoviesByGenre('.cat-box.box-2', 'romance')
@@ -118,7 +122,7 @@ async function showMovieDetails(movieID) {
         <div class="modal-block-1">
             <h1>${movieData.title}</h1>
             <h2>${movieData.year} - ${movieData.genres.join(", ")}</h2>
-            <h2>A définir - ${movieData.duration} minutes - (${movieData.countries.join(" / ")})</h2>
+            <h2>${movieData.rated} - ${movieData.duration} minutes - (${movieData.countries.join(" / ")})</h2>
             <h2>IMDB score: ${movieData.imdb_score}/10</h2>
             <br>
             <p><strong>Réalisé par:</strong></p>
@@ -151,5 +155,70 @@ window.addEventListener("click", (event) => {
     if (event.target === modal && modalOpen) {
         modal.style.display = "none";
         modalOpen = false;
+    }
+})
+
+function displayMoreMovie(containerDivClass) {
+    let numberElements = 0;
+    if (Math.min(screen.width, window.innerWidth) > 600) {
+        numberElements = 2;
+    }
+    const parentContainer = document.querySelector(containerDivClass);
+    const button = parentContainer.querySelector('.button-display-more');
+    const MovieCards = parentContainer.querySelectorAll('.movie-card');
+
+    if (button.textContent === 'Voir plus') {
+        revealHiddenMovie(MovieCards)
+        button.textContent = 'Voir moins';
+    } else {
+        for (let i = numberElements + 2;  i < MovieCards.length; i++) {
+            MovieCards[i].style.display = 'none';
+        }
+        button.textContent = 'Voir plus';
+    }
+}
+
+function revealHiddenMovie(listMovieCard) {
+    for (let i = 0; i < listMovieCard.length; i++) {
+        if (window.getComputedStyle(listMovieCard[i]).display === 'none') {
+           listMovieCard[i].style.display = 'grid';
+        }
+    }
+}
+
+// function displayMoreMovie(containerDivClass) {
+//     const parentContainer = document.querySelector(containerDivClass);
+//     const button = parentContainer.querySelector('.button-display-more');
+//     const MovieCards = parentContainer.querySelectorAll('.movie-card');
+//     let smallerWidth = Math.min(screen.width, window.innerWidth);
+//     let numberElementsHidden
+//     if (smallerWidth <= 600) {
+//         numberElementsHidden = 0
+//     } else if (smallerWidth <= 992) {
+//         numberElementsHidden = 2
+//     } else {
+//         numberElementsHidden = 4
+//     }
+//     if (button.textContent === 'Voir plus') {
+//         revealHiddenMovie(MovieCards)
+//         button.textContent = 'Voir moins';
+//     } else if (numberElementsHidden > 2) {
+//         for (let i = numberElementsHidden + 2;  i < MovieCards.length; i++) {
+//             MovieCards[i].style.display = 'none';
+//         }
+//         button.textContent = 'Voir plus';
+//     }
+// }
+//
+
+//
+window.addEventListener("resize", function() {
+    const everyMovieCard = document.querySelectorAll('.movie-card');
+    if(window.innerWidth > 992) {
+        for (let i = 0; i < everyMovieCard.length; i++) {
+            if (everyMovieCard[i].style.display === 'none') {
+                everyMovieCard[i].style.display = 'grid';
+            }
+        }
     }
 })

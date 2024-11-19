@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,34 +17,49 @@
     <h1 id="banner_title">Vidéos à la demande</h1>
 </header>
 <main>
-    <h1>Meilleur film</h1>
-    <div class="best-movie-box">
-    </div>
-    <h1>Film les mieux notés</h1>
-    <div class="cat-box box-1">
-    </div>
-    <h1>Romance</h1>
-    <div class="cat-box box-2">
-    </div>
-    <h1>Fantasy</h1>
-    <div class="cat-box box-3">
-    </div>
-    <div class="genre-selector">
-        <h1><label for="movie-choice-1">Autres :</label></h1>
-        <select class="genre-selector-list" name="movie-choice-1" id="movie-choice-1">
-        </select>
-    </div>
-    <div class="cat-box box-4">
-    </div>
-    <div class="genre-selector">
-        <h1><label for="movie-choice-2">Autres :</label></h1>
-        <select class="genre-selector-list" name="movie-choice-2" id="movie-choice-2">
-        </select>
-    </div>
-    <div class="cat-box box-5">
-    </div>
+    <section>
+        <h1>Meilleur film</h1>
+        <div class="best-movie-box">
+        </div>
+    </section>
 
-    <button id="openModal">Open Modal</button>
+    <section>
+        <h1>Film les mieux notés</h1>
+        <div class="cat-box box-1">
+        </div>
+    </section>
+
+    <section>
+        <h1>Romance</h1>
+        <div class="cat-box box-2">
+        </div>
+    </section>
+
+    <section>
+        <h1>Fantasy</h1>
+        <div class="cat-box box-3">
+        </div>
+    </section>
+
+    <section>
+        <div id="genre-selector-1" class="genre-selector">
+            <h1><label for="movie-choice-1">Autres :</label></h1>
+            <select class="genre-selector-list" name="movie-choice-1" id="movie-choice-1">
+            </select>
+        </div>
+        <div class="cat-box box-4">
+        </div>
+    </section>
+
+    <section>
+        <div id="genre-selector-2" class="genre-selector">
+            <h1><label for="movie-choice-2">Autres :</label></h1>
+            <select class="genre-selector-list" name="movie-choice-2" id="movie-choice-2">
+            </select>
+        </div>
+        <div class="cat-box box-5">
+        </div>
+    </section>
 
     <div class="modal" id="movieModal">
         <div class="modal-content">
