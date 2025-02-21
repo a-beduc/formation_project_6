@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="UTF-8">
+        <title>Just Stream It</title>
+        <link rel="stylesheet" href="style.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
+        <link rel="icon" type="image/x-icon" href="/images/juststreamit_favicon.ico">
+        <script src="script.js" defer></script>
+    </head>
+
+    <body>
+
+        <!-- HEADER -->
+        <header class="banner">
+            <img class="banner__img"
+                 alt="Logo de l'association JustStreamIt. Il y a une image stylisé d'un objectif de caméra en noir
+                 et blanc, et au-dessous le texte JustStreamIt"
+                 src="images/juststreamit_logo.png">
+            <h1 class="banner__title" id="banner_title">Vidéos à la demande</h1>
+        </header>
+        <!-- END OF HEADER -->
+
+
+        <!-- MAIN CONTAINER -->
+        <main>
+
+            <!--BEST MOVIE CONTAINER -->
+            <section class="bestMovie">
+                <h2 class="bestMovie__title">Meilleur film</h2>
+                <div class="bestMovie__box"></div>
+            </section>
+            <!-- END OF BEST MOVIE CONTAINER -->
+
+            <!-- FIXED CATEGORIES CONTAINERS -->
+            <section class="categoryMovie">
+                <h2 class="categoryMovie__title">Film les mieux notés</h2>
+                <div class="categoryMovie__container box-1"></div>
+            </section>
+
+            <section class="categoryMovie">
+                <h2 class="categoryMovie__title">Romance</h2>
+                <div class="categoryMovie__container box-2"></div>
+            </section>
+
+            <section class="categoryMovie">
+                <h2 class="categoryMovie__title">Fantasy</h2>
+                <div class="categoryMovie__container box-3"></div>
+            </section>
+            <!-- END OF FIXED CATEGORIES CONTAINERS -->
+
+            <!-- MODIFIABLE CATEGORIES CONTAINERS -->
+            <section class="categoryMovie">
+                <div id="genre-selector-1" class="categoryMovie__selector">
+                    <label class="categoryMovie__selector__label" for="movie-choice-1">Autres :</label>
+                    <select class="categoryMovie__selector__list" name="movie-choice-1" id="movie-choice-1"></select>
+                </div>
+                <div class="categoryMovie__container box-4">
+                </div>
+            </section>
+
+            <section class="categoryMovie">
+                <div id="genre-selector-2" class="categoryMovie__selector">
+                    <label class="categoryMovie__selector__label" for="movie-choice-2">Autres :</label>
+                    <select class="categoryMovie__selector__list" name="movie-choice-2" id="movie-choice-2"></select>
+                </div>
+                <div class="categoryMovie__container box-5">
+                </div>
+            </section>
+            <!-- END OF MODIFIABLE CATEGORIES CONTAINERS -->
+
+        </main>
+        <!-- ENF OF MAIN CONTAINER -->
+
+        <!-- MODAL -->
+        <div class="modal" id="movieModal"></div>
+        <!-- END OF MODAL -->
+
+    </body>
+</html>
