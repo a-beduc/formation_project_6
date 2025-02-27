@@ -3,8 +3,34 @@
  */
 
 const baseUrl = 'http://127.0.0.1:8000/api/v1/';
-const titlesUrl = `${baseUrl}titles/`
-const genresUrl = `${baseUrl}genres/`
+const titlesUrl = `${baseUrl}titles/`;
+const genresUrl = `${baseUrl}genres/`;
+
+// Log the state of the 'categoryMovie__button', false will hide the movieCards, true will display them.
+const showMoreStates = {
+    '.categoryMovie__container.box-1': false,
+    '.categoryMovie__container.box-2': false,
+    '.categoryMovie__container.box-3': false,
+    '.categoryMovie__container.box-4': false,
+    '.categoryMovie__container.box-5': false,
+};
+
+let currentBreakpoint = getBreakpoint(window.innerWidth);
+
+/**
+ * Determine the size of the screen and attribute it a keyword ('small', 'medium', 'large')
+ * @param {number} width - width of window in pixel
+ * @returns {string}
+ */
+function getBreakpoint(width) {
+    if (width < 600) {
+        return 'small'
+    } else if (width < 992) {
+        return 'medium'
+    } else {
+        return 'large'
+    }
+}
 
 /**
  * Fetch data from an API and return a JSON.
@@ -31,7 +57,6 @@ async function getMovieData(id) {
 
 /**
  * Display the movie with the highest IMDB score from the API in the .bestMovie__box container.
- * @returns {Promise<void>}
  */
 async function displayBestMovie() {
     // Get a list of movies sorted by their IMDB score
@@ -80,7 +105,6 @@ async function getBestSixMoviesArray(genre= "") {
  * Display up to six movies with the highest IMDB score of a category in a container.
  * @param {string} containerDivClass
  * @param {string} [genre=""]
- * @returns {Promise<void>}
  */
 async function displayMoviesByGenre(containerDivClass, genre = "") {
     // Get the data of the six best movies, store it in an array
@@ -111,13 +135,22 @@ async function displayMoviesByGenre(containerDivClass, genre = "") {
         moviesContainer.appendChild(movieCard);
     }
 
+    let buttonInnerText
+    if (!showMoreStates[containerDivClass]) {
+        buttonInnerText = 'Voir plus';
+        } else {
+        buttonInnerText = 'Voir moins';
+    }
     // Add a "Voir plus" button
     moviesContainer.innerHTML += `
-        <button class="categoryMovie__button" 
+            <button
+                class="categoryMovie__button" 
                 onclick="displayMoreMovie('${containerDivClass}')">
-            Voir plus
-        </button>
+            ${buttonInnerText}
+            </button>
     `;
+
+    updateCategoryDisplay(containerDivClass);
 }
 
 /**
@@ -145,7 +178,6 @@ async function getAllGenre() {
  * @param {string} selectorID - ID of the <select> element
  * @param {string} initial_genre
  * @param {string} containerDivClass - Class name of the container for the associated movies
- * @returns {Promise<void>}
  */
 async function createSelectGenreList(selectorID, initial_genre, containerDivClass) {
     const arrayOfGenre = await getAllGenre();
@@ -178,7 +210,6 @@ async function createSelectGenreList(selectorID, initial_genre, containerDivClas
 /**
  * Handle the display and the content of the modal for a specific movie
  * @param {number} movieID
- * @returns {Promise<void>}
  */
 async function showMovieDetails(movieID) {
     const movieData = await getMovieData(movieID)
@@ -231,53 +262,68 @@ async function showMovieDetails(movieID) {
     modal.style.display = 'flex';
 }
 
-
 /**
- *
- * @param {string} containerDivClass
- * @returns
+ * Modify the state of the Button of the target container, update the display of associated movies cards.
+ * @param {string} containerSelector - class to identify a container
  */
-function displayMoreMovie(containerDivClass) {
-    let numberElements = 0;
-    if (Math.min(screen.width, window.innerWidth) > 600) {
-        numberElements = 2;
-    }
-    const parentContainer = document.querySelector(containerDivClass);
-    const button = parentContainer.querySelector('.categoryMovie__button');
-    const MovieCards = parentContainer.querySelectorAll('.movieCard');
-
-    if (button.textContent === 'Voir plus') {
-        revealHiddenMovie(MovieCards)
-        button.textContent = 'Voir moins';
+function displayMoreMovie(containerSelector) {
+    const container = document.querySelector(containerSelector);
+    const categoryButton = container.querySelector('.categoryMovie__button');
+    if (!showMoreStates[containerSelector]) {
+        showMoreStates[containerSelector] = true;
+        categoryButton.textContent = 'Voir moins';
     } else {
-        for (let i = numberElements + 2;  i < MovieCards.length; i++) {
-            MovieCards[i].style.display = 'none';
-        }
-        button.textContent = 'Voir plus';
+        showMoreStates[containerSelector] = false;
+        categoryButton.textContent = 'Voir plus';
     }
-}
-
-function revealHiddenMovie(listMovieCard) {
-    for (let i = 0; i < listMovieCard.length; i++) {
-        if (window.getComputedStyle(listMovieCard[i]).display === 'none') {
-           listMovieCard[i].style.display = 'grid';
-        }
-    }
+    updateCategoryDisplay(containerSelector);
 }
 
 /**
- * Event listener for window resize:
+ * Update the display of cards in a container depending on window size and showMortState
+ * @param {string} containerSelector - class to identify a container
+ */
+function updateCategoryDisplay(containerSelector) {
+    const container = document.querySelector(containerSelector);
+    if (!container) return;
+
+    const movieCards = container.querySelectorAll('.movieCard');
+    let cardsToShow;
+
+    if (showMoreStates[containerSelector]) {
+        cardsToShow = 6;
+    } else {
+        if (window.innerWidth > 992) {
+            cardsToShow = 6;
+        } else if (window.innerWidth > 600) {
+            cardsToShow = 4;
+        } else {
+            cardsToShow = 2;
+        }
+    }
+
+    movieCards.forEach((card, index) => {
+        if (index < cardsToShow) {
+            card.classList.remove("movieCard__hidden");
+        } else {
+            card.classList.add("movieCard__hidden");
+        }
+    });
+}
+
+/**
+ * React to the resizing of the window, and adapt cards displays if the resize reach a breakpoint.
  */
 window.addEventListener("resize", function() {
-    const everyMovieCard = document.querySelectorAll('.movieCard');
-    if(window.innerWidth > 992) {
-        for (let i = 0; i < everyMovieCard.length; i++) {
-            if (everyMovieCard[i].style.display === 'none') {
-                everyMovieCard[i].style.display = 'grid';
-            }
+    const newBreakpoint = getBreakpoint(window.innerWidth);
+    if (newBreakpoint !== currentBreakpoint) {
+        currentBreakpoint = newBreakpoint;
+        for (let containerSelector in showMoreStates) {
+            updateCategoryDisplay(containerSelector);
         }
     }
-})
+});
+
 
 // Initial calls to display movies
 displayBestMovie();
