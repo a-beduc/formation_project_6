@@ -439,19 +439,19 @@ p {
     overflow: hidden;
     background-color: #cccccc;
 
-    &:nth-child(n+3) {
-        display: none;
-        @media (min-width: $tablet-width) {
-            display: grid;
-        }
-    }
-
-    &:nth-child(n+5) {
-        display: none;
-        @media (min-width: $desktop-width) {
-            display: grid;
-        }
-    }
+    //&:nth-child(n+3) {
+    //    display: none;
+    //    @media (min-width: $tablet-width) {
+    //        display: grid;
+    //    }
+    //}
+    //
+    //&:nth-child(n+5) {
+    //    display: none;
+    //    @media (min-width: $desktop-width) {
+    //        display: grid;
+    //    }
+    //}
 
     &__img {
         /* placement */
@@ -500,6 +500,10 @@ p {
         &:hover {
             background-color: #141313;
         }
+    }
+
+    &__hidden {
+        display: none;
     }
 }
 // END OF MOVIE CARD CONTAINER

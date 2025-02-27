@@ -401,22 +401,6 @@ p {
   overflow: hidden;
   background-color: #cccccc;
 }
-.movieCard:nth-child(n+3) {
-  display: none;
-}
-@media (min-width: 600px) {
-  .movieCard:nth-child(n+3) {
-    display: grid;
-  }
-}
-.movieCard:nth-child(n+5) {
-  display: none;
-}
-@media (min-width: 992px) {
-  .movieCard:nth-child(n+5) {
-    display: grid;
-  }
-}
 .movieCard__img {
   /* placement */
   position: absolute;
@@ -469,6 +453,9 @@ p {
 }
 .movieCard__button:hover {
   background-color: #141313;
+}
+.movieCard__hidden {
+  display: none;
 }
 
 .modal {
