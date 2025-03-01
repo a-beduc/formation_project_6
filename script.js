@@ -14,6 +14,14 @@ const showMoreStates = {
     '.categoryMovie__container.box-4': false,
     '.categoryMovie__container.box-5': false,
 };
+
+// Variable to store data in key:data pair where key is a genre and data is an array of the top 6 movie of that
+// genre after it has been fetched.
+const genreCache = {}
+
+// Variable to store data in a key:data pair where key is a movie ID and data is an object with the movie information.
+const movieCache = {}
+
 let genreList = [];
 
 let currentBreakpoint = getBreakpoint(window.innerWidth);
@@ -46,14 +54,22 @@ async function getRequestFromUrl(url) {
     return null;
 }
 
+
 /**
- * Get the data of a movie from its ID.
+ * Get the data of a movie from its ID
+ * look in memory first and if it's not found send a GET request.
  * @param {number} id - The movie ID.
  * @returns {Promise<Object>}
  */
 async function getMovieData(id) {
-    const url = titlesUrl + id;
-    return await getRequestFromUrl(url);
+    if (movieCache[id]) {
+        return movieCache[id];
+    } else {
+        const url = titlesUrl + id;
+        const movieData = await getRequestFromUrl(url);
+        movieCache[id] = movieData
+        return movieData
+    }
 }
 
 /**
@@ -61,11 +77,17 @@ async function getMovieData(id) {
  */
 async function displayBestMovie() {
     // Get a list of movies sorted by their IMDB score and the number of votes they received
-    const url = `${titlesUrl}?sort_by=-imdb_score,-votes`;
-    const bestMovies = await getRequestFromUrl(url);
-
-    // Get a JSON containing the best movie data
-    const bestMovieData = await getMovieData(bestMovies.results[0].id);
+    let bestMovieID
+    if (genreCache["default"]) {
+        bestMovieID = genreCache["default"][0].id
+    } else {
+        // this condition should never run
+        const url = `${titlesUrl}?sort_by=-imdb_score,-votes`;
+        const bestMovies = await getRequestFromUrl(url);
+        genreCache['default'] = bestMovies.results;
+        bestMovieID = genreCache['default'][0].id;
+    }
+    const bestMovieData = await getMovieData(bestMovieID);
 
     // Format and present the data of the selected movie in the DOM
     const bestMovieBox = document.querySelector(".bestMovie__box");
@@ -82,15 +104,28 @@ async function displayBestMovie() {
 }
 
 /**
- * Get the top six movies from an url (can be filtered by their genre)
+ * Get the top six movies from an url (can be filtered by their genre),
+ * look in memory first and if it's not found send a GET request
  * @param {string} [genre=""] - Movie genre ex. "romance"
  * @returns {Promise<Object>}
  */
 async function getBestSixMoviesArray(genre= "") {
-    // Get a list of movies sorted by their IMDB score
-    const url = `${titlesUrl}?sort_by=-imdb_score,-votes&page_size=6&genre=${genre}`;
-    const bestSixMovies = await getRequestFromUrl(url);
-    return bestSixMovies.results;
+    // Get a list of movies sorted by their IMDB score and number of votes
+    let key
+    if (genre) {
+        key = genre
+    } else {
+        key = "default"
+    }
+
+    if (genreCache[key]) {
+        return genreCache[key];
+    } else {
+        const url = `${titlesUrl}?sort_by=-imdb_score,-votes&page_size=6&genre=${genre}`;
+        const bestSixMovies = await getRequestFromUrl(url);
+        genreCache[key] = bestSixMovies.results;
+        return genreCache[key];
+    }
 }
 
 /**
@@ -309,17 +344,25 @@ window.addEventListener("resize", function() {
 });
 
 
-// Initial calls to display movies
+/**
+ * First calls to populate the page.
+ * Wait for the Genre to be stored in a variable.
+ * Wait for the execution of multiples functions to display most of the datas.
+ * Make a last call to fetch the data of the bestMovie.
+ */
 async function initializeApp() {
     await getAllGenre();
 
-    displayBestMovie();
-    displayMoviesByGenre('.categoryMovie__container.box-1', '')
-    displayMoviesByGenre('.categoryMovie__container.box-2', 'Romance')
-    displayMoviesByGenre('.categoryMovie__container.box-3', 'Fantasy')
+    await Promise.all ([
+        displayMoviesByGenre('.categoryMovie__container.box-1', ''),
+        displayMoviesByGenre('.categoryMovie__container.box-2', 'Romance'),
+        displayMoviesByGenre('.categoryMovie__container.box-3', 'Fantasy'),
 
-    createSelectGenreList('movie-choice-1', 'Action', '.categoryMovie__container.box-4');
-    createSelectGenreList('movie-choice-2', 'Animation', '.categoryMovie__container.box-5');
+        createSelectGenreList('movie-choice-1', 'Action', '.categoryMovie__container.box-4'),
+        createSelectGenreList('movie-choice-2', 'Animation', '.categoryMovie__container.box-5')
+    ]);
+
+    displayBestMovie();
 }
 
 initializeApp();
