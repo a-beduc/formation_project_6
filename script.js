@@ -4,7 +4,7 @@
 
 const baseUrl = 'http://127.0.0.1:8000/api/v1/';
 const titlesUrl = `${baseUrl}titles/`;
-const genresUrl = `${baseUrl}genres/`;
+const genresUrl = `${baseUrl}genres/?page_size=25`;
 
 // Log the state of the 'categoryMovie__button', false will hide the movieCards, true will display them.
 const showMoreStates = {
@@ -14,6 +14,7 @@ const showMoreStates = {
     '.categoryMovie__container.box-4': false,
     '.categoryMovie__container.box-5': false,
 };
+let genreList = [];
 
 let currentBreakpoint = getBreakpoint(window.innerWidth);
 
@@ -59,8 +60,8 @@ async function getMovieData(id) {
  * Display the movie with the highest IMDB score from the API in the .bestMovie__box container.
  */
 async function displayBestMovie() {
-    // Get a list of movies sorted by their IMDB score
-    const url = `${titlesUrl}?sort_by=-imdb_score`;
+    // Get a list of movies sorted by their IMDB score and the number of votes they received
+    const url = `${titlesUrl}?sort_by=-imdb_score,-votes`;
     const bestMovies = await getRequestFromUrl(url);
 
     // Get a JSON containing the best movie data
@@ -87,18 +88,9 @@ async function displayBestMovie() {
  */
 async function getBestSixMoviesArray(genre= "") {
     // Get a list of movies sorted by their IMDB score
-    const url = `${titlesUrl}?sort_by=-imdb_score&genre=${genre}`
-    const firstPage = await getRequestFromUrl(url);
-
-    // Save the movies data of the first page in a variable (Between 1 and 5 movie(s) per page)
-    let movies = firstPage.results;
-
-    // Check if the API has a second page, if it does get the first movie of the second page
-    if (firstPage.next) {
-        const secondPage = await getRequestFromUrl(firstPage.next);
-        movies = firstPage.results.concat(secondPage.results[0]);
-    }
-    return movies;
+    const url = `${titlesUrl}?sort_by=-imdb_score,-votes&page_size=6&genre=${genre}`;
+    const bestSixMovies = await getRequestFromUrl(url);
+    return bestSixMovies.results;
 }
 
 /**
@@ -158,19 +150,13 @@ async function displayMoviesByGenre(containerDivClass, genre = "") {
  * @returns {Promise<*[]>}
  */
 async function getAllGenre() {
-    let dataGenres = []
     let currentPageGenre = await getRequestFromUrl(genresUrl);
 
     // Get datas from every pages
-    while (currentPageGenre !== null) {
-        dataGenres = dataGenres.concat(currentPageGenre.results);
-        if (currentPageGenre.next) {
-            currentPageGenre = await getRequestFromUrl(currentPageGenre.next);
-        } else {
-            currentPageGenre = null;
-        }
+    while (currentPageGenre) {
+        genreList.push(...currentPageGenre.results);
+        currentPageGenre = await getRequestFromUrl(currentPageGenre.next);
     }
-    return dataGenres;
 }
 
 /**
@@ -180,15 +166,13 @@ async function getAllGenre() {
  * @param {string} containerDivClass - Class name of the container for the associated movies
  */
 async function createSelectGenreList(selectorID, initial_genre, containerDivClass) {
-    const arrayOfGenre = await getAllGenre();
-
     // Select the container in the DOM and empty it
     const genreSelectorList = document.getElementById(selectorID);
     genreSelectorList.innerHTML = ``;
 
     // Create the list of options for categories of movies
-    for (let i = 0; i < arrayOfGenre.length; i++) {
-        const genre = arrayOfGenre[i];
+    for (let i = 0; i < genreList.length; i++) {
+        const genre = genreList[i];
         const genreSelector = document.createElement('option');
         genreSelector.value = genre.name;
         genreSelector.textContent = genre.name;
@@ -326,10 +310,16 @@ window.addEventListener("resize", function() {
 
 
 // Initial calls to display movies
-displayBestMovie();
-displayMoviesByGenre('.categoryMovie__container.box-1', '')
-displayMoviesByGenre('.categoryMovie__container.box-2', 'romance')
-displayMoviesByGenre('.categoryMovie__container.box-3', 'fantasy')
+async function initializeApp() {
+    await getAllGenre();
 
-createSelectGenreList('movie-choice-1', 'Action', '.categoryMovie__container.box-4');
-createSelectGenreList('movie-choice-2', 'Animation', '.categoryMovie__container.box-5');
+    displayBestMovie();
+    displayMoviesByGenre('.categoryMovie__container.box-1', '')
+    displayMoviesByGenre('.categoryMovie__container.box-2', 'Romance')
+    displayMoviesByGenre('.categoryMovie__container.box-3', 'Fantasy')
+
+    createSelectGenreList('movie-choice-1', 'Action', '.categoryMovie__container.box-4');
+    createSelectGenreList('movie-choice-2', 'Animation', '.categoryMovie__container.box-5');
+}
+
+initializeApp();
