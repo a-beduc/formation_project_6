@@ -43,7 +43,7 @@ body {
 
     @media (min-width: $desktop-width) {
         width: 80%;
-        padding: 5% 0;
+        padding: 10% 0;
     }
 }
 
@@ -317,14 +317,16 @@ p {
 
         /* placement */
         width: 100%;
-        gap: 1rem;
+        gap: 2.5rem;
 
         @media (min-width:$tablet-width) {
             grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
         }
 
         @media (min-width: $desktop-width) {
             grid-template-columns: 1fr 1fr 1fr;
+            gap: 2rem;
         }
     }
 
