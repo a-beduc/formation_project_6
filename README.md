@@ -2,8 +2,9 @@
 
 Sixth project for the online course of Python application development on OpenClassrooms.
 <hr>
+
 <p align="center">
-    <img alt="Logo of the chess application" style="width:60%; height:auto;" src="images/juststreamit_logo.png" title="Logo of LITRevu" />
+    <img alt="Logo of the chess application" width="300" src="images/juststreamit_logo.png" title="Logo of LITRevu" />
 </p>
 
 ## Description
@@ -20,8 +21,6 @@ Follow the instruction to install and launch the API server.
     git clone https://github.com/a-beduc/formation_project_6
     ```
 4. in the selected directory, open the `index.html` file with your internet browser.
-
-<div>
-<img width="100%" height="auto" style="padding:15%; margin:auto;" src="images/juststreamit.gif" alt="a quick gif of JustStreamIt site in use">
-</div>
-
+<p align="center">
+<img src="images/juststreamit.gif" width="400" alt="a quick gif of JustStreamIt site in use">
+</p>
